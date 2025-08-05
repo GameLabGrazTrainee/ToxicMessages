@@ -185,7 +185,9 @@ public class PlayerController : MonoBehaviour
             goodMessage.gameObject.SetActive(true);
             speed = BaseSpeed * 1.2f;
             enemy.GetComponent<EnemyMovement>().StopChasingPlayer();
-        };
+            this.transform.position = TestSpawn.position;
+        }
+        ;
 
     }
 
