@@ -1,10 +1,25 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.InputSystem;
+
+public enum ToxicType
+{
+    Not, Threats, Insult, Disruption, Illwishes
+}
+
+[Serializable]
+public class Messages
+{
+    public string messageText;
+    public ToxicType isToxic;
+    public string usernameText;
+}
+
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,14 +29,19 @@ public class PlayerController : MonoBehaviour
     public TMP_Text messageText;
     public TMP_Text goodMessage;
     public TMP_Text badMessage;
-    public List<string> messageList;
-    public List<bool> isToxic;
+    public TMP_Text wrongCategoryMessage;
+    public TMP_Text rightCategoryMessage;
+  
+    public List<Messages> messages;
     public float messageInterval = 5f;
     public float feedbackMessageInterval = 5f;
     public float feedbackMessageTimer;
+    public float categoryMessageTimer;
+    public float categoryMessageInterval = 5f;
     public float BaseSpeed = 0f;
     public GameObject enemy;
     public Transform RespawnPoint;
+    public Transform TestSpawn;
 
     public AudioSource AudioSource;
     public AudioClip CoinPickupAudio;
@@ -32,7 +52,7 @@ public class PlayerController : MonoBehaviour
 
 
     public TMP_Text usernameText;
-    public List<string> usernameList;
+    
     public float usernameInterval = 5f;
 
 
@@ -45,8 +65,10 @@ public class PlayerController : MonoBehaviour
     private int LifeCount;
     private int currentMessage = 0;
     private bool isFeedbackMessageShown= false;
+    public bool isCategoryMessageShown= false;
     private float movementX;
     private float movementY;
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -56,8 +78,8 @@ public class PlayerController : MonoBehaviour
         ShowNextMessage();
         ShowNextUsernameMessage();
 
+ 
 
-        
         count = 0;
         LifeCount = 3;
         SetCountText();
@@ -66,20 +88,24 @@ public class PlayerController : MonoBehaviour
         winText.gameObject.SetActive(false);
         goodMessage.gameObject.SetActive(false);
         badMessage.gameObject.SetActive(false);
+        wrongCategoryMessage.gameObject.SetActive(false);
+        rightCategoryMessage.gameObject.SetActive(false);
         myAnim = GetComponent<Animator>();
        
     }
 
     void ShowNextMessage()
     {
-        currentMessage = Random.Range(0, messageList.Count);
-        messageText.GetComponent<TextMeshProUGUI>().text = messageList[currentMessage]; 
+        messageInterval = 5f;
+        currentMessage = UnityEngine.Random.Range(0, messages.Count);
+        messageText.GetComponent<TextMeshProUGUI>().text = messages[currentMessage].messageText; 
     }
 
     void ShowNextUsernameMessage()
     {
-        int currentUser = Random.Range(0, usernameList.Count);
-        usernameText.GetComponent<TextMeshProUGUI>().text = usernameList[currentUser];
+        usernameInterval = 5f;
+        int currentUser = UnityEngine.Random.Range(0, messages.Count);
+        usernameText.GetComponent<TextMeshProUGUI>().text = messages[currentUser].usernameText;
         
     }
 
@@ -147,8 +173,9 @@ public class PlayerController : MonoBehaviour
             AudioSource.resource = CoinPickupAudio;
             AudioSource.Play();
         }
-        
+       
     }
+
 
 
 
@@ -173,19 +200,23 @@ public class PlayerController : MonoBehaviour
     {
         isFeedbackMessageShown = true;
         feedbackMessageTimer = 0f;
-        if (isToxic[currentMessage] == false)
+        if (messages[currentMessage].isToxic == 0)
         {
             speed = BaseSpeed * 0.7f;
             goodMessage.gameObject.SetActive(false);
             badMessage.gameObject.SetActive(true);
+            feedbackMessageInterval = 5f;
 
         }
         else {
             badMessage.gameObject.SetActive(false);
             goodMessage.gameObject.SetActive(true);
+            feedbackMessageInterval = 10f;
             speed = BaseSpeed * 1.2f;
             enemy.GetComponent<EnemyMovement>().StopChasingPlayer();
             this.transform.position = TestSpawn.position;
+            messageInterval = 15f;
+            usernameInterval = 15f;
         }
         ;
 
@@ -220,6 +251,35 @@ public class PlayerController : MonoBehaviour
             }
             
         }
+
+        if (isCategoryMessageShown == true)
+        {
+            categoryMessageTimer = categoryMessageTimer + Time.deltaTime;
+            if (categoryMessageTimer > categoryMessageInterval)
+            {
+                rightCategoryMessage.gameObject.SetActive(false);
+                wrongCategoryMessage.gameObject.SetActive(false);
+                categoryMessageTimer = 0f;
+                isCategoryMessageShown = false;
+            }
+
+        }
     }
 
+    public Messages GetCurrentMessage()
+    {
+        return messages[currentMessage];
+
+    }
+
+    public void IncreaseLife()
+    {
+        LifeCount++;
+        SetLivesText();
+    }
+
+    public void ResetPosition()
+    {
+        this.transform.position = RespawnPoint.position;
+    }
 }
