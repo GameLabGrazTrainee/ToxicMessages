@@ -71,7 +71,7 @@ public class EnemyMovement : MonoBehaviour
         audioSource.Play();
         chooseTarget();
         isFollowingPlayer = false;
-        navMeshAgent.speed = 10f;
+        navMeshAgent.speed = 12f;
     }
     public void StartChasingPlayer()
     {
