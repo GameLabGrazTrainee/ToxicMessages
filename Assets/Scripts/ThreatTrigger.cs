@@ -16,20 +16,15 @@ public class ThreatTrigger : MonoBehaviour
         {
             playerController.IncreaseLife();
             playerController.ResetPosition();
-            playerController.isCategoryMessageShown = true;
-            playerController.rightCategoryMessage.gameObject.SetActive(true);
-            playerController.wrongCategoryMessage.gameObject.SetActive(false);
-            playerController.goodMessage.gameObject.SetActive(false);
+            playerController.ShowRightCategory();
+         
 
 
         }
         else
         {
             playerController.ResetPosition();
-            playerController.isCategoryMessageShown = true;
-            playerController.wrongCategoryMessage.gameObject.SetActive(true);
-            playerController.goodMessage.gameObject.SetActive(false);
-            playerController.rightCategoryMessage.gameObject.SetActive(false);
+            playerController.ShowWrongCategory();
         }
     }   
 

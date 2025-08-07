@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
@@ -49,7 +50,7 @@ public class PlayerController : MonoBehaviour
 
 
     public Animator myAnim;
-
+    
 
     public TMP_Text usernameText;
     
@@ -91,7 +92,9 @@ public class PlayerController : MonoBehaviour
         wrongCategoryMessage.gameObject.SetActive(false);
         rightCategoryMessage.gameObject.SetActive(false);
         myAnim = GetComponent<Animator>();
-       
+
+        
+
     }
 
     void ShowNextMessage()
@@ -203,20 +206,19 @@ public class PlayerController : MonoBehaviour
         if (messages[currentMessage].isToxic == 0)
         {
             speed = BaseSpeed * 0.7f;
-            goodMessage.gameObject.SetActive(false);
-            badMessage.gameObject.SetActive(true);
             feedbackMessageInterval = 5f;
+            ShowWrongFeedback();
+            enemy.GetComponent<EnemyMovement>().ToxicGas();
 
         }
         else {
-            badMessage.gameObject.SetActive(false);
-            goodMessage.gameObject.SetActive(true);
             feedbackMessageInterval = 10f;
             speed = BaseSpeed * 1.2f;
             enemy.GetComponent<EnemyMovement>().StopChasingPlayer();
             this.transform.position = TestSpawn.position;
             messageInterval = 15f;
             usernameInterval = 15f;
+            ShowRightFeedback();
         }
         ;
 
@@ -239,31 +241,9 @@ public class PlayerController : MonoBehaviour
             usernameMessageTimer = 0f;
         }
 
-        if (isFeedbackMessageShown == true)
-        {
-            feedbackMessageTimer = feedbackMessageTimer + Time.deltaTime;
-            if (feedbackMessageTimer > feedbackMessageInterval)
-            {
-                goodMessage.gameObject.SetActive(false);
-                badMessage.gameObject.SetActive(false);
-                feedbackMessageTimer = 0f;
-                isFeedbackMessageShown = false;
-            }
-            
-        }
+      
 
-        if (isCategoryMessageShown == true)
-        {
-            categoryMessageTimer = categoryMessageTimer + Time.deltaTime;
-            if (categoryMessageTimer > categoryMessageInterval)
-            {
-                rightCategoryMessage.gameObject.SetActive(false);
-                wrongCategoryMessage.gameObject.SetActive(false);
-                categoryMessageTimer = 0f;
-                isCategoryMessageShown = false;
-            }
-
-        }
+       
     }
 
     public Messages GetCurrentMessage()
@@ -282,4 +262,48 @@ public class PlayerController : MonoBehaviour
     {
         this.transform.position = RespawnPoint.position;
     }
+
+    public void ShowRightCategory()
+    {
+        StartCoroutine(ShowCategory(true));
+    }
+
+    public void ShowWrongCategory()
+    {
+        StartCoroutine(ShowCategory(false));
+    }
+
+    public void ShowRightFeedback()
+    {
+        StartCoroutine(Showfeedback(true));
+    }
+
+    public void ShowWrongFeedback()
+    {
+        StartCoroutine(Showfeedback(false));
+    }
+
+    private IEnumerator ShowCategory(bool isRight)
+    {
+        rightCategoryMessage.gameObject.SetActive(isRight);
+        wrongCategoryMessage.gameObject.SetActive(!isRight);
+        goodMessage.gameObject.SetActive(false);
+
+        yield return new WaitForSeconds(categoryMessageInterval);
+
+        rightCategoryMessage.gameObject.SetActive(false);
+        wrongCategoryMessage.gameObject.SetActive(false);
+    }
+
+    private IEnumerator Showfeedback(bool isRight)
+    {
+        goodMessage.gameObject.SetActive(isRight);
+        badMessage.gameObject.SetActive(!isRight);
+
+        yield return new WaitForSeconds(feedbackMessageInterval);
+
+        goodMessage.gameObject.SetActive(false);
+        badMessage.gameObject.SetActive(false);
+    }
 }
+

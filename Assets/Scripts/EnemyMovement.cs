@@ -20,8 +20,8 @@ public class EnemyMovement : MonoBehaviour
     public AudioResource RunningAudio;
     public AudioResource FollowingAudio;
     public AudioResource CoinPickupAudio;
- 
-    
+
+    public ParticleSystem toxicCloudParticles;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Start()
@@ -100,5 +100,9 @@ public class EnemyMovement : MonoBehaviour
         
     }
 
+    public void ToxicGas()
+    {
+        toxicCloudParticles.Play();
+    }
 
     }
