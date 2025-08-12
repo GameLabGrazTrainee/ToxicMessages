@@ -1,3 +1,3 @@
 # ToxicMessages
 Run away from toxi the frog and report toxic messages!
-[Watch the demo](docs/AleahsToxiTrailer.mov)
+[Watch the demo](https://cloud.tugraz.at/index.php/s/n8qCJHqigZADYzg)
